@@ -1,0 +1,44 @@
+For Linux/Mac:
+              Run following to execute the bash scripts:
+                chmod +x beat.sh && chmod +x worker.sh
+
+              install the requirements stated in req.txt:
+                pip3 install -r req.txt
+
+              also install redis:
+                https://redis.io/download
+              After downloading redis, add it to path variable.
+
+              You have to open 4 sperate terminal tabs and run following in each of them:
+                1) ./beat.sh
+                2) ./worker.sh
+                3) python manage.py runserver
+                4) redis-server
+
+
+              The beat script runs the task to email every 5 minutes ( For testing ).
+              You can change it to desired time as per your needs from admin panel
+
+              The worker script gets the task and executes and sends the email.
+              The redis works as background queue on which tasks are executed.
+
+For windows:
+              install the requirements stated in req.txt:
+                pip install -r req.txt
+
+              also install redis:
+                https://github.com/microsoftarchive/redis/releases/tag/win-3.0.504
+              After downloading redis, add it to path variable.
+
+              You have to open 4 sperate terminal tabs and run following in each of them:
+                1) bash -c './beat.sh'
+                2) bash -c './worker.sh'
+                3) python manage.py runserver
+                4) redis-server
+
+
+              The beat script runs the task to email every 5 minutes ( For testing ).
+              You can change it to desired time as per your needs from admin panel
+
+              The worker script gets the task and executes and sends the email.
+              The redis works as background queue on which tasks are executed.

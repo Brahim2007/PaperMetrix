@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h3>Hello {{em}}, your recommendations for this week are listed below:</h3>
+  <div class="row">
+    {% for item in rec %}
+      <div class="col-12 my-2 border-bottom d-flex flex-column">
+        <a href='http://localhost:8000/article/{{item.id}}' target="_blank" class="ml-auto mr-2 stretched-link">{{item.title}}</a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

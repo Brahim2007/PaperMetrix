@@ -1,0 +1,456 @@
+{% load static %}
+{% load i18n %}
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  <script src="https://pagination.js.org/dist/2.1.5/pagination.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w==" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://pagination.js.org/dist/2.1.5/pagination.css">
+  <style media="screen">
+    #card_div{
+      width:100%;
+    }
+    .plain_link:link {
+      color: black;
+      text-decoration: none;
+    }
+
+    .plain_link:visited {
+      color: black;
+      text-decoration: none;
+    }
+
+    .plain_link:hover {
+      color: black;
+      text-decoration: none;
+    }
+
+    .plain_link:active {
+      color: black;
+      text-decoration: none;
+    }
+    @keyframes up_vote_for {
+
+      0%   {color: rgba(0,152,0,0);font-size:auto}
+      25%  {color: rgba(0,152,0,0.25);font-size:1.2em}
+      50%  {color: rgba(0,152,0,0.5);font-size:1.3em}
+      75%  {color: rgba(0,152,0,0.5);font-size:1.2em}
+      100% {color: rgba(0,152,0,1);font-size:auto}
+    }
+    @keyframes down_vote_for {
+      0%   {color: rgba(255,0,0,0);font-size:auto}
+      25%  {color: rgba(255,0,0,0.25);font-size:1.2em}
+      50%  {color: rgba(255,0,0,0.5);font-size:1.3em}
+      75%  {color: rgba(255,0,0,0.5);font-size:1.2em}
+      100% {color: rgba(255,0,0,1);font-size:auto}
+    }
+
+    .upvote{
+      animation: up_vote_for 0.2s;
+      animation-fill-mode: forwards;
+      /* background-color: orange; */
+    }
+    .al_upvote{
+      color: rgba(0,152,0,1)
+    }
+    .al_downvote{
+      color: rgba(255,0,0,1)
+    }
+    .downvote{
+      animation: down_vote_for 0.2s;
+      animation-fill-mode: forwards;
+      /* background-color: orange; */
+    }
+
+  </style>
+</head>
+
+<body>
+  {% include 'nav.html' %}
+
+  <div class="container m-5">
+    <ul class="nav nav-pills my-3" role="tablist">
+      <li class="nav-item red">
+        <a class="mx-2 nav-link text-white bg-info active" id="index-tab" data-toggle="tab" href="#index" role="tab" aria-selected="true"><i class="fas fa-file-alt"></i> {% trans "Articles" %}</a>
+      </li>
+      <li class="nav-item">
+        <a class="mx-2 nav-link text-white bg-warning" id="top-tab" data-toggle="tab" href="#top" role="tab" aria-selected="false"><i class="fas fa-thumbs-up"></i> {% trans "Top" %}</a>
+      </li>
+      <li class="nav-item">
+        <a class="mx-2 nav-link text-white bg-danger" id="hot-tab" data-toggle="tab" href="#hot" role="tab" aria-selected="false"><i class="fab fa-hotjar"></i> {% trans "Hot" %}</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="index" role="tabpanel" aria-labelledby="home-tab">
+        <div class="row">
+          <div class="col-12">
+            <div class="card text-white bg-info new_card">
+              <div class="card-content">
+                <div class="card-header text-center" style="font-size:1.2em;font-family:Comic Sans MS, cursive, sans-serif">
+                  {% trans "Our articles" %}
+                </div>
+                <div class="card-body bg-light text-dark">
+                    <div class="new_body row" style="overflow: auto !important">
+
+                    </div>
+                    <div class="d-flex flex-column m-auto">
+                      <div class="spinner-grow m-auto display" role="status" style="width: 3rem; height: 3rem">
+                      </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex bg-light">
+                  <div class="pagination_footer_new mx-auto">
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="top" role="tabpanel" aria-labelledby="profile-tab">
+        <div class="row">
+          <div class="col-12">
+            <div class="card text-white bg-warning top_card">
+              <div class="card-content">
+                <div class="card-header text-center" style="font-size:1.2em;font-family:Comic Sans MS, cursive, sans-serif">
+                  {% trans "Top rated" %}
+                </div>
+                <div class="card-body bg-light text-dark">
+                    <div class="top_body row" style="overflow: auto !important">
+
+                    </div>
+                    <div class="d-flex flex-column m-auto">
+                      <div class="spinner-grow m-auto display" role="status" style="width: 3rem; height: 3rem">
+                      </div>
+                    </div>
+
+
+                </div>
+                <div class="card-footer d-flex bg-light">
+                  <div class="pagination_footer_top mx-auto">
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="hot" role="tabpanel" aria-labelledby="contact-tab">
+        <div class="row">
+          <div class="col-12">
+            <div class="card text-white bg-danger hot_card">
+              <div class="card-content">
+                <div class="card-header text-center" style="font-size:1.2em;font-family:Comic Sans MS, cursive, sans-serif">
+                  {% trans "Hot articles" %}
+                </div>
+                <div class="card-body bg-light text-dark">
+                    <div class="hot_body row" style="overflow: auto !important">
+
+                    </div>
+                    <div class="d-flex flex-column m-auto">
+                      <div class="spinner-grow m-auto display" role="status" style="width: 3rem; height: 3rem">
+                      </div>
+                    </div>
+
+                </div>
+                <div class="card-footer d-flex bg-light">
+                  <div class="pagination_footer_hot mx-auto">
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div>
+  </div>
+
+</body>
+<!-- <script src="{% static "js/main.js" %}"></script> -->
+<script type="text/javascript">
+    function clickedUpvote(ele,id) {
+      if("{{request.user.is_authenticated}}" == "False"){
+        alert("Login to review and comment")
+        return
+      }
+      $(ele).parent().addClass("upvote")
+      $(ele).parent().parent().parent().find(".downvote").removeClass("downvote")
+      $(ele).parent().parent().parent().find(".al_downvote").removeClass("al_downvote")
+      $.ajax({
+        url:"{% url 'update_review' %}",
+        type:"POST",
+        data:{"pk":id,"rating":1,"csrfmiddlewaretoken":"{{csrf_token}}"},
+        success:(res)=>{
+          $(ele).parent().parent().find('.vote_count').html(res['rate'])
+        }
+      })
+    }
+    function clickedDownvote(ele,id) {
+      if("{{request.user.is_authenticated}}" == "False"){
+        alert("Login to review and comment")
+        return
+      }
+      $(ele).parent().addClass("downvote")
+      $(ele).parent().parent().parent().find(".upvote").removeClass("upvote")
+      $(ele).parent().parent().parent().find(".al_upvote").removeClass("al_upvote")
+
+      $.ajax({
+        url:"{% url 'update_review' %}",
+        type:"POST",
+        data:{"pk":id,"rating":-1,"csrfmiddlewaretoken":"{{csrf_token}}"},
+        success:(res)=>{
+          $(ele).parent().parent().find('.vote_count').html(res['rate'])
+        }
+      })
+    }
+    function check_up_down(up,down,item) {
+      console.log(item.rate === 1);
+      if(item.rate === 1){
+        return `<div class="vote">
+            <i class="fas fa-chevron-up al_upvote" onclick="${up}"></i>
+        </div>
+        <div class="vote"><span class='vote_count'>${item.vote}</span></div>
+        <div class="vote">
+            <i class="fas fa-chevron-down" onclick="${down}"></i>
+        </div>`
+      }
+      else if (item.rate === -1) {
+        return `<div class="vote">
+            <i class="fas fa-chevron-up" onclick="${up}"></i>
+        </div>
+        <div class="vote"><span class='vote_count'>${item.vote}</span></div>
+        <div class="vote">
+            <i class="fas fa-chevron-down al_downvote" onclick="${down}"></i>
+        </div>`
+      }
+      else{
+        console.log(item);
+        return `<div class="vote">
+            <i class="fas fa-chevron-up" onclick="${up}"></i>
+        </div>
+        <div class="vote"><span class='vote_count ml-1'>${item.vote}</span></div>
+        <div class="vote">
+            <i class="fas fa-chevron-down" onclick="${down}"></i>
+        </div>`
+      }
+
+    }
+    function template(res) {
+        let dat = ''
+
+        $.each(res, function(index, item){
+            let up = `clickedUpvote(this,'${item.id}')`
+            let down = `clickedDownvote(this,'${item.id}')`
+
+
+            dat += `
+                <div class="col-12 my-2 border-bottom d-flex flex-row">
+                  <div>
+                    ${check_up_down(up,down,item)}
+                  </div>
+                  <div class='d-flex'>
+                    <a href='/article/${item.id}' class="ml-4 my-auto mr-2 plain_link">${item.title}</a>
+                  </div>
+                </div>
+            `;
+        });
+        return dat;
+    }
+    $(document).ready(()=>{
+
+      $(".display").css({'display':'block'})
+      $.ajax({type:'GET',url:"{% url 'get_article' %}",success:(res)=>{
+        $('.top_card').find(".display").css({'display':'none'})
+        // console.log($(this).find(".display"));
+        $('.pagination_footer_top').pagination({
+          pageSize:25,
+          dataSource: res,
+          showGoInput: true,
+          showGoButton: true,
+          callback: function(data, pagination) {
+              var html = template(data);
+              $('.top_body').html(html);
+          }
+      })
+    }})
+
+      $.ajax({type:'GET',url:"{% url 'get_article_new' %}",success:(res)=>{
+        $('.new_card').find(".display").css({'display':'none'})
+        // console.log($(this).find(".display"));
+        $('.pagination_footer_new').pagination({
+          pageSize:25,
+          dataSource: res,
+          showGoInput: true,
+          showGoButton: true,
+          callback: function(data, pagination) {
+              var html = template(data);
+              $('.new_body').html(html);
+          }
+      })
+    }})
+
+      $.ajax({type:'GET',url:"{% url 'get_article_top' %}",success:(res)=>{
+        if(res.error == 'error'){
+          return
+        }
+        $('.hot_card').find(".display").css({'display':'none'})
+        $('.pagination_footer_hot').pagination({
+          pageSize:25,
+          dataSource: res,
+          showGoInput: true,
+          showGoButton: true,
+          callback: function(data, pagination) {
+              var html = template(data);
+              $('.hot_body').html(html);
+          }
+        })
+      }})
+    })
+</script>
+<div class="well well-sm vertical-align">
+	<div class="row">
+		<div class="col-md-6">
+			<p class="md">
+			
+<!-- Button trigger modal-->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalScrollable">
+    About | Hakkında
+</button>
+
+<!-- Modal-->
+<div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"> About | Hakkında</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i aria-hidden="true" class="ki ki-close"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="height: 900px;">
+			
+			<!-- tjribi-->
+
+            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">English</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Türkçe</a>
+  </li>
+</ul>
+<div class="tab-content" id="pills-tabContent">
+  <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+  <style>
+div {
+  text-align: justify;
+  text-justify: inter-word;
+}
+</style>
+<b><font color="#9c0000">PaperMetrix - a personalized recommender for scientific literature</font></b>
+<div>
+<p>With the recent explosion in scientific publishing, how do you find the essential science that you need to read?</p> 
+<p><b><font color="#dc3545">PaperMetrix is here to help you.</font></b></p>
+<p>PaperMetrix is a personalized recommender system that specifically aims to help researchers and practitioners in the scientific community parse through the large volume of literature and filter publications that may be relevant and of interest to them.</p>
+
+<p>PaperMetrix automatically sorts all new scientific papers into related topics and allows you to view the recent papers that are most likely to become influential in each topic. It is a cloud based service that uses novel algorithms to classify and cluster published using Topic Modeling.</p>  
+<p>Researchers (our typical users) provide basic information like topics/keywords of interest and journal papers. Users can create multiple ‘libraries’ (for different projects) and upload papers to it directly from Mendeley.</p>
+
+<p>PaperMetrix provides a seamless interface to search the Mendeley database as well. Personalized recommendations based on relevancy, recency, up or down vote, comment and sentiment analysis are created daily and weekly email digests of relevant publications in your field of research are sent directly to your inbox.</span></p>
+
+<p>PaperMetrix also monitors the Twitter feed and tweets relevant to your field of interest are available in real time. When you "Like", "Vote” and "comment" papers this will help us to make better recommendations for you and for other users in future.</p>
+
+<p>The project of PaperMetrix is developed as the practical part of a PhD thesis in the Department of Libraries & Information Science at Istanbul University-Turkey- on the topic of Altmetric for scientific research.</p>
+
+<p><b>Disclaimer:</b></p> While PaperMetrix is powered by the Mendeley API, the two services are in no way affiliated to one another.</p>
+<p><b><font color="#9c0000">PaperMetrix Team</font></b></p>
+<b><a href="mailto:brahim.kertiou@ogr.iu.edu.tr">brahim.kertiou@ogr.iu.edu.tr</a></b></div>
+</div>
+  <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+  <b><font color="#9c0000">PaperMetrix - bilimsel literatür için kişiselleştirilmiş bir tavsiye</font></b>
+<div>
+<p>Bilimsel yayıncılıkta son dönemde yaşanan patlama ile birlikte okumanız gereken makaleleri nasıl bulabilirsiniz?</p> 
+<p><b><font color="#dc3545">PaperMetrix size yardımcı olmak için vardır.</font></b></p>
+<p>PaperMetrix, özellikle bilimsel topluluktaki araştırmacıların büyük hacimli literatürü incelemesine, ilgisini çekebilecek ve önemli olabilecek çok sayıda yayını analiz etmelerine ve filtrelemelerine yardım etmeyi amaçlayan kişiselleştirilmiş bir tavsiye sistemidir.</p>
+
+<p>PaperMetrix, tüm yeni bilimsel makaleleri otomatik olarak ilgili konulara göre ayırır ve her konuda etkili olma olasılığı en yüksek olan son makaleleri görüntülemenizi sağlar. PaperMetrix, yayınları sınıflandırmak ve kümlemek için konu modelleme yöntemi ile yeni algoritmalar kullanan bulut tabanlı bir hizmettir.</p>  
+<p>Araştırmacılar (tipik kullanıcılarımız), ilgi konuları ve anahtar kelimeleri ve dergi makaleleri gibi temel bilgileri sağlar. Kullanıcılar birden fazla "kütüphane" (farklı projeler için) oluşturabilir  ve Mendeley'den makaleleri doğrudan  yükleyebilir.</p>
+
+<p>PaperMetrix, Mendeley veri tabanında da arama yapmak için kusursuz bir arayüz sağlar. Kişiselleştirilmiş öneriler, İlgi, yenilik, yukarı ve aşağı oylama, yorumlar ve duygu analizine göre oluşturulduktan sonra  her hafta araştırma alanınızla ilgili yayınların özetleri e-posta adresinize gönderilir. </span></p>
+
+<p>Ayrıca PaperMetrix, Twitter’deki tweetleri izler ve alanınızla ilgili o anki tweet'leri sunar. Makaleler  "Beğenmeniz", "Oy vermeniz" ve "yorum yapmanız", size ve gelecekte diğer kullanıcılar için daha iyi önerilerde bulunmamıza yardımcı olacaktır.</p>
+
+<p>PaperMetrix projesi, İstanbul Üniversitesi Edebiyat Fakültesi Bilgi ve Belge Yönetimi bölümünde bilimsel araştırmalar için Altmetrik konusu üzerinde hazırlanan doktora tezinin pratik bölümü olarak geliştirilmiştir.</p>
+
+<p><b>Feragatname:</b></p> PaperMetrix, Mendeley API'sı tarafından desteklenirken, iki hizmet hiçbir şekilde birbirine bağlı değildir.</p>
+<p><b><font color="#9c0000">PaperMetrix Ekibi</font></b></p>
+<b><a href="mailto:brahim.kertiou@ogr.iu.edu.tr">brahim.kertiou@ogr.iu.edu.tr</a></b></div>
+</div> 
+
+</div>
+             <!-- tjribi-->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">Close | Kapat</button>
+             </div>
+        </div>
+    </div>
+</div>
+			</p>
+		</div>
+		<div class="col-md-6">
+			<p class="md">
+				<p><b>PaperMetrix Support: 
+			<a href="mailto:brahim.kertiou@ogr.iu.edu.tr">brahim.kertiou@ogr.iu.edu.tr</a><br>© Copyright PaperMetrix 2021, all rights reserved.
+</p></b></p>
+		</div>
+	</div>
+  <style>
+.well {
+position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #f8f9fa!important;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+}
+.well-sm {
+    padding: 9px;
+    border-radius: 3px;
+}
+@media (min-width: 992px)
+.col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {
+    float: left;
+}
+.col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
+    position: relative;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.col-md-6 {
+    width: 50%;
+}
+.md {
+    text-align: center;
+}
+  </style>
+</div>
+</html>

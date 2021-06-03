@@ -1,0 +1,64 @@
+{% load i18n %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="{% url 'home' %}">PaperMetrix</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'home' %}">{% trans "Home" %}</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'topics' %}">{% trans "Topics" %}</a>
+      </li>
+      {% if not request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'signup' %}" role="button" aria-disabled="true">{% trans "Sign up" %}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'login' %}" role="button" aria-disabled="true">{% trans "Log in" %}</a>
+        </li>
+      {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'library'%}">{% trans "Library" %}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}" role="button">{% trans "Log out" %}</a>
+        </li>
+      {% endif %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="language_select" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{request.session.lan}}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="language_select">
+          <a class="dropdown-item" href="/lan/en-us/">English</a>
+          <a class="dropdown-item" href="/lan/tr/">Türkçe</a>
+        </div>
+      </li>
+    </ul>
+
+    <form class="form-inline my-2 my-lg-0 mr-2" action="{% url 'search' %}">
+      <input class="form-control mr-sm-2" required type="search" name="search" placeholder="{% trans 'Search' %}" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">{% trans "Search" %}</button>
+    </form>
+    <ul class="navbar-nav">
+
+      <li class="nav-item dropleft">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="navbar-toggler-icon"></span>
+        </a>
+        <div class="dropdown-menu">
+          {% if request.user.is_authenticated %}
+            <a class="dropdown-item" href="#">{{request.user.full_name}}</a>
+            <div class="dropdown-divider"></div>
+          {% endif %}
+          <a class="dropdown-item" href="{% url 'reccomend' %}">{% trans "Your recommendations" %}</a>
+          <a class="dropdown-item" href="#">{% trans "Change Password" %}</a>
+        </div>
+      </li>
+    </ul>
+
+  </div>
+</nav>

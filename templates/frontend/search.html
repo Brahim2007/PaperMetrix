@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+{% include 'nav.html' %}
+{% load i18n %}
+<style media="screen">
+  .plain_link:link {
+    color: black;
+    text-decoration: none;
+  }
+
+</style>
+<div class="container">
+  <div class="div">
+      <div class="card text-white bg-warning top_card">
+        <div class="card-content">
+          <div class="card-header text-center" style="font-size:1.2em;font-family:Comic Sans MS, cursive, sans-serif">
+            {% trans "Search" %}
+          </div>
+          <div class="card-body bg-light text-dark">
+              <div class="top_body row" style="overflow: auto !important">
+                {% for article in article_list %}
+                  <div class="col-12 my-2 border-bottom d-flex flex-row">
+                    <div class='d-flex'>
+                      <a href="{% url 'article' article.pk %}" class="ml-4 my-auto mr-2 plain_link">{{ article.title }}</a>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+          </div>
+        </div>
+      </div>
+
+  </div>
+</div>
+{% endblock %}
