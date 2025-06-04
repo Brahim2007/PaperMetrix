@@ -2,23 +2,9 @@ import django
 from django.conf import settings
 
 import requests
-from api.models import Article,Authors
+from api.models import Article, Authors
 from django.db.models import ObjectDoesNotExist
 import json
-def twitter_from_doi(title,doi):
-    header = {'Authorization':f'Bearer {settings.TWITTER_BEARER}'}
-    res_doi = requests.post('https://api.twitter.com/1.1/tweets/search/fullarchive/prod.json',headers=header,json={"query":f'url: "{doi}"',"fromDate":"201001010101","toDate":"202001010101"})
-    res_title = requests.post('https://api.twitter.com/1.1/tweets/search/fullarchive/prod.json',headers=header,json={"query":f'"{title}"',"fromDate":"201001010101","toDate":"202001010101"})
-
-    if res_doi.ok and res_title.ok:
-        return [*res_doi.json()['results'],*res_title.json()['results']]
-    elif res_doi.ok:
-        return res_doi.json()['results']
-    elif res_title.ok:
-        return res_title.json()['results']
-    else:
-        print(res_title.json())
-        return []
 
 def get_abstract(doi):
     try:

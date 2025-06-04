@@ -8,4 +8,4 @@ scikit-learn
 pandas
 requests
 mendeley
-tweepy
+python-dotenv

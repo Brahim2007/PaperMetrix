@@ -73,7 +73,11 @@
 </head>
 
 <body>
-  {% include 'nav.html' %}
+{% include 'nav.html' %}
+  <div class="container mt-4">
+    <h3 class="mb-3">Top Trending Papers</h3>
+    <div id="trending" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3"></div>
+  </div>
 
   <div class="container m-5">
     <ul class="nav nav-pills my-3" role="tablist">
@@ -269,6 +273,13 @@
         return dat;
     }
     $(document).ready(()=>{
+      $.get("{% url 'get_article_top' %}", (res)=>{
+        let html='';
+        $.each(res.slice(0,6), function(_,item){
+          html+=`<div class="col"><div class="card glass p-2"><a href='/article/${item.id}'>${item.title}</a><div class='small text-muted'>Votes: ${item.vote}</div></div></div>`;
+        });
+        $('#trending').html(html);
+      });
 
       $(".display").css({'display':'block'})
       $.ajax({type:'GET',url:"{% url 'get_article' %}",success:(res)=>{
