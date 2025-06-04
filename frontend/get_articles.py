@@ -48,7 +48,7 @@ def remove_tag(request,pk):
     try:
         tag = Tag.objects.get(pk=pk)
         if request.user == tag.user: tag.delete()
-    except Tag.DoesNotEsist:
+    except Tag.DoesNotExist:
         pass
     return JsonResponse({"success":"Success"})
 
@@ -56,7 +56,7 @@ def get_tweets(request,pk):
     try:
         object = Article.objects.get(pk=pk)
         if object.twitter_data.get("tweets") is None:
-            tweets = twitter_from_doi(self.object.title,self.object.identifiers.get("doi"))
+            tweets = twitter_from_doi(object.title,object.identifiers.get("doi"))
             object.twitter_data = {'tweets':tweets}
             object.save()
             return JsonResponse({'tweets':tweets})
