@@ -52,14 +52,3 @@ def remove_tag(request,pk):
         pass
     return JsonResponse({"success":"Success"})
 
-def get_tweets(request,pk):
-    try:
-        object = Article.objects.get(pk=pk)
-        if object.twitter_data.get("tweets") is None:
-            tweets = twitter_from_doi(self.object.title,self.object.identifiers.get("doi"))
-            object.twitter_data = {'tweets':tweets}
-            object.save()
-            return JsonResponse({'tweets':tweets})
-        return JsonResponse({'tweets':object.twitter_data.get("tweets")})
-    except Exception as e:
-        return JsonResponse({'error':str(e)},status=500)
