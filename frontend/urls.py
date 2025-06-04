@@ -27,6 +27,7 @@ urlpatterns = [
     path('get_article/',views.get_article,name='get_article'),
     path('get_article_top/',views.get_article_top,name='get_article_top'),
     path('get_article_new/',views.get_article_new,name='get_article_new'),
+    path('get_article_trending/',views.get_article_trending,name='get_article_trending'),
 
     path('get_articles/get_article_from_data/',get_articles.get_article_from_data,name='get_article_from_data'),
     path('get_library_reccomendation/<pk>/',views.get_library_reccomendation,name='get_library_reccomendation'),

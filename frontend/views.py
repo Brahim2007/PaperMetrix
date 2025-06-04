@@ -413,6 +413,11 @@ def get_article_new(request):
     res = [{'title':i.title,'id':i.pk,'vote':i.get_total(),'rate':i.check_up_down(request.user)} for i in article_list]
     return JsonResponse(res,safe=False)
 
+def get_article_trending(request):
+    article_list = Article.objects.all().order_by("-count")[:1000]
+    res = [{"title":i.title,"id":i.pk,"vote":i.get_total(),"rate":i.check_up_down(request.user)} for i in article_list]
+    return JsonResponse(res,safe=False)
+
 def get_library_reccomendation(request,pk):
     if request.user.is_authenticated:
         arts = []
