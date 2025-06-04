@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.postgres.fields import JSONField,ArrayField
+from django.db.models import JSONField
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth import get_user_model
 from django.contrib.postgres import fields
 from django.core.validators import URLValidator
@@ -38,7 +39,6 @@ class Article(models.Model):
     count = models.IntegerField(default=0)
     comm_count = models.IntegerField(default=0)
     score = models.IntegerField(blank=True,null=True)
-    twitter_data = models.JSONField(default=dict)
     # reader_count_by_academic_status = models.TextField()
     # reader_count_by_subject_area = models.TextField()
     # reader_count_by_country = models.TextField()

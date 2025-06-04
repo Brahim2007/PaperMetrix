@@ -27,7 +27,6 @@
       .keyword{
         border-radius: 20px
       }
-      .twitter_btn{
         font-weight: bolder;
         color: gray;
         font-size: 1.2em;
@@ -157,13 +156,10 @@
 
     </script>
     <script type="text/javascript">
-    $(document).on('click','.twitter',function(){
         let body = `Hello- %0D%0AI would like to share this article with:%0D%0A {{object.title}}%0D%0A`.replace(/ /g,'%20')
 
-       var tweetUrl = "https://twitter.com/intent/tweet?text="+body+"&url="+window.location.href;
        var x = screen.width/2 - 700/2;
        var y = screen.height/2 - 450/2;
-       var child = window.open(tweetUrl, "popupWindow", "width=600, height=400,left="+x+",top="+y);
          child.focus();
     });
 
@@ -186,15 +182,11 @@
   </head>
   <body class="bg-light">
     {% include 'nav.html' %}
-    <!-- <a class="twitter"  href="javascript:void(0)">Tweet</a> -->
 
     <div class="container m-lg-5 m-0">
       <div class="ml-0 ml-lg-2">
         <div class="btn-group" role="group" aria-label="Basic example">
           <button class="btn btn-outline-danger btn-sm" onclick="sendMail()"><i class="far fa-envelope"></i> {% trans "Mail this paper" %}</button>
-          <!-- <a target="_blank" role="button" class="twitter btn btn-outline-info btn-sm ml-1" href="https://twitter.com/intent/tweet?text=Hello-%20%0D%0AI%20would%20like%20to%20share%20this%20article%20with:%0D%0A%20{{object.title}}%0D%0A&url=https://www.google.com"><i class="fab fa-twitter"></i> Tweet this paper</a> -->
-          <a role="button" class="twitter btn btn-outline-info btn-sm ml-1" href="javascript:void(0)"><i class="fab fa-twitter"></i> {% trans "Tweet this paper" %}</a>
-          <!-- <a href="https://twitter.com/intent/tweet?url=http://test.com;via=stack">twitter</a> -->
         </div>
       </div>
       <div class="d-flex ml-0 ml-lg-2 mt-3">
@@ -264,7 +256,6 @@
           </div>
           <div class="col-6 d-flex">
             <div class="d-flex flex-column mt-md-4">
-              <div>{% if altmetric.cited_by_tweeters_count %}<strong>{% trans "Cited on twitter" %}: </strong>{{altmetric.cited_by_tweeters_count}}{% endif %}</div>
               <div>{% if altmetric.cited_by_posts_count %}<strong>{% trans "Cited on facebook" %}: </strong>{{altmetric.cited_by_posts_count}}{% endif %}</div>
               <div>{% if altmetric.cited_by_rdts_count %}<strong>{% trans "Cited on reddit" %}: </strong>{{altmetric.cited_by_rdts_count}}{% endif %}</div>
             </div>
@@ -275,12 +266,10 @@
       <div class="d-flex flex-column mt-2">
         <div class="d-flex mt-2">
           <h4>Tweet feed:</h4>
-          <div class="ml-auto tweet_pagination">
 
           </div>
         </div>
 
-        <div class="row tweets">
         </div>
 
         <div class="ml-2 ml-md-0 my-1">
@@ -463,16 +452,12 @@
               <div class="col-12 border rounded mx-5 my-2">
                 <div class="d-flex mt-1">
                   <div><img src="${item.user.profile_image_url_https}"></div>
-                  <div class="align-self-center ml-2"><a href='https://twitter.com/i/user/${item.user.id}'>${item.user.name}</a></div>
                 </div>
                 <div class="d-flex">
                   ${item.text}
                 </div>
                 <div class="d-flex">
                   <div class="btn-group btn-group-sm ml-auto mr-2" role="group" aria-label="First group">
-                    <a target="_blank" href="https://twitter.com/intent/retweet?tweet_id=${item.id}" role="button" class="btn twitter_btn"><i class="fas fa-retweet"></i> Retweet</a>
-                    <a target="_blank" href="https://twitter.com/intent/favorite?tweet_id=${item.id}" role="button" class="btn twitter_btn"><i class="fas fa-heart"></i> Favourite</a>
-                    <a target="_blank" href="https://twitter.com/intent/tweet?in_reply_to=${item.id}" role="button" class="btn twitter_btn"><i class="fas fa-reply"></i> Reply</a>
                   </div>
                 </div>
               </div>
@@ -481,16 +466,12 @@
           return dat;
       }
       $(function () {
-        $.ajax({type:'GET',url:"{% url 'get_tweets' object.pk %}",success:(res)=>{
           // console.log($(this).find(".display"));
-          $('.tweet_pagination').pagination({
             pageSize:5,
-            dataSource: res['tweets'],
             showGoInput: true,
             showGoButton: true,
             callback: function(data, pagination) {
                 var html = template(data);
-                $('.tweets').html(html);
             }
         })
       }})
@@ -548,7 +529,6 @@ div {
 
 <p>PaperMetrix provides a seamless interface to search the Mendeley database as well. Personalized recommendations based on relevancy, recency, up or down vote, comment and sentiment analysis are created daily and weekly email digests of relevant publications in your field of research are sent directly to your inbox.</span></p>
 
-<p>PaperMetrix also monitors the Twitter feed and tweets relevant to your field of interest are available in real time. When you "Like", "Vote” and "comment" papers this will help us to make better recommendations for you and for other users in future.</p>
 
 <p>The project of PaperMetrix is developed as the practical part of a PhD thesis in the Department of Libraries & Information Science at Istanbul University-Turkey- on the topic of Altmetric for scientific research.</p>
 
@@ -568,7 +548,6 @@ div {
 
 <p>PaperMetrix, Mendeley veri tabanında da arama yapmak için kusursuz bir arayüz sağlar. Kişiselleştirilmiş öneriler, İlgi, yenilik, yukarı ve aşağı oylama, yorumlar ve duygu analizine göre oluşturulduktan sonra  her hafta araştırma alanınızla ilgili yayınların özetleri e-posta adresinize gönderilir. </span></p>
 
-<p>Ayrıca PaperMetrix, Twitter’deki tweetleri izler ve alanınızla ilgili o anki tweet'leri sunar. Makaleler  "Beğenmeniz", "Oy vermeniz" ve "yorum yapmanız", size ve gelecekte diğer kullanıcılar için daha iyi önerilerde bulunmamıza yardımcı olacaktır.</p>
 
 <p>PaperMetrix projesi, İstanbul Üniversitesi Edebiyat Fakültesi Bilgi ve Belge Yönetimi bölümünde bilimsel araştırmalar için Altmetrik konusu üzerinde hazırlanan doktora tezinin pratik bölümü olarak geliştirilmiştir.</p>
 

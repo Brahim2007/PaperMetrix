@@ -21,7 +21,8 @@ import json
 import collections
 from mendeley import Mendeley
 
-from .utils import get_article_from_authors,get_data,get_data_by_query,twitter_from_doi
+from .utils import get_article_from_authors,get_data,get_data_by_query
+from api.deepseek_client import recommend_articles
 from .reccom import *
 import random
 import requests
@@ -342,9 +343,16 @@ class DetailArticle(DetailView):
             pass
 
         context['ids'] = []
-        for i in get_similar_items(f"{self.object.title} {self.object.abstract} {self.object.source} {self.object.type}",1,20):
-            art = Article.objects.get(pk=i)
-            context['ids'].append({'title':art.title,'id':art.pk})
+        prompt = f"{self.object.title} {self.object.abstract} {' '.join(self.object.keywords or [])}"
+        rec_ids = recommend_articles(prompt, limit=20)
+        if not rec_ids:
+            rec_ids = get_similar_items(prompt, 1, 20)
+        for i in rec_ids:
+            try:
+                art = Article.objects.get(pk=i)
+                context['ids'].append({'title': art.title, 'id': art.pk})
+            except Article.DoesNotExist:
+                continue
 
         if self.object.identifiers.get('doi'):
             re = requests.get(f'https://api.altmetric.com/v1/doi/{self.object.identifiers.get("doi")}')

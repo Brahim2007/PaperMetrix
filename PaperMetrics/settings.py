@@ -11,21 +11,23 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
+from dotenv import load_dotenv
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 's%g)_@gxx!s(x-^!=fr$oc4!s-@@macvma^m7pur4-1yc69r#-'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'changeme')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',') if os.environ.get('ALLOWED_HOSTS') else []
 
 
 # Application definition
@@ -95,13 +97,13 @@ AUTH_USER_MODEL = 'authorization.User'
 # }
 
 DATABASES = {
-    'default':{
-        'ENGINE':'django.db.backends.postgresql_psycopg2',
-        'HOST':'',
-        'PORT':'',
-        'NAME':'paper',
-        'USER':'postgres',
-        'PASSWORD':'vihas007'
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': os.environ.get('DB_HOST', ''),
+        'PORT': os.environ.get('DB_PORT', ''),
+        'NAME': os.environ.get('DB_NAME', ''),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
     }
 }
 
@@ -187,17 +189,17 @@ SUBDISCIPLINES = {
 }
 
 
-MENDELEY_SECRET = 'ZaDDZKH64gIeWFkj'
-MENDELEY_ID = 8198
+MENDELEY_SECRET = os.environ.get('MENDELEY_SECRET', '')
+MENDELEY_ID = int(os.environ.get('MENDELEY_ID', '0'))
+DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY', '')
 
 
 LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
-TWITTER_BEARER = 'AAAAAAAAAAAAAAAAAAAAAD48KgEAAAAAnX7GlKfiG2ULH%2F%2FEsEvy%2BYgRgz0%3DrRHsFuHLHaKLR2rJ0xAr6OMPVFHcvTFVh5oEfUUiUbA7LdYvO3'
-EMAIL_HOST='smtp.gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'johndo521999@gmail.com'
-EMAIL_HOST_PASSWORD = 'pubg12345'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
