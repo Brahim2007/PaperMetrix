@@ -6,6 +6,28 @@ from api.models import Article,Authors
 from django.db.models import ObjectDoesNotExist
 import json
 
+def twitter_from_doi(title, doi):
+    """Fetch tweets referencing a DOI or title."""
+    header = {'Authorization': f'Bearer {settings.TWITTER_BEARER}'}
+    res_doi = requests.post(
+        'https://api.twitter.com/1.1/tweets/search/fullarchive/prod.json',
+        headers=header,
+        json={'query': f'url: "{doi}"', 'fromDate': '201001010101', 'toDate': '202001010101'}
+    )
+    res_title = requests.post(
+        'https://api.twitter.com/1.1/tweets/search/fullarchive/prod.json',
+        headers=header,
+        json={'query': f'"{title}"', 'fromDate': '201001010101', 'toDate': '202001010101'}
+    )
+
+    if res_doi.ok and res_title.ok:
+        return [*res_doi.json()['results'], *res_title.json()['results']]
+    if res_doi.ok:
+        return res_doi.json()['results']
+    if res_title.ok:
+        return res_title.json()['results']
+    return []
+
 def get_abstract(doi):
     try:
         res = requests.get(f'https://api.altmetric.com/v1/doi/{doi}').json()
