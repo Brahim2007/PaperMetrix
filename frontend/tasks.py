@@ -30,3 +30,11 @@ def add():
 
             send_mail("subject",st, settings.EMAIL_HOST_USER, [em], fail_silently = False,html_message=st)
     return 'ih'
+
+
+@shared_task
+def update_scores():
+    for article in Article.objects.all():
+        article.final_score = article.compute_final_score()
+        article.save()
+    return 'updated'

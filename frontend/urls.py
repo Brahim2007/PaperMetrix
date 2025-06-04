@@ -29,12 +29,12 @@ urlpatterns = [
     path('get_article_new/',views.get_article_new,name='get_article_new'),
 
     path('get_articles/get_article_from_data/',get_articles.get_article_from_data,name='get_article_from_data'),
-    path('get_library_recommendation/<pk>/',views.get_library_recommendation,name='get_library_recommendation'),
+    path('get_library_reccomendation/<pk>/',views.get_library_reccomendation,name='get_library_reccomendation'),
+    path('smart_recommendations/', views.smart_recommendations, name='smart_recommendations'),
 
     path('add_tag/<pk>/',get_articles.add_tag,name='add_tag'),
     path('remove_tag/<pk>/',get_articles.remove_tag,name='remove_tag'),
 
-    path('get_tweets/<pk>/',get_articles.get_tweets,name='get_tweets'),
     path('lan/<str:lan>/',views.change_lan),
 
 ]

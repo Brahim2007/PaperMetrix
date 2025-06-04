@@ -21,7 +21,7 @@ import json
 import collections
 from mendeley import Mendeley
 
-from .utils import get_article_from_authors,get_data,get_data_by_query,twitter_from_doi
+from .utils import get_article_from_authors,get_data,get_data_by_query
 from .reccom import *
 import random
 import requests
@@ -332,11 +332,12 @@ class DetailArticle(DetailView):
         super(DetailArticle,self).get(request,pk)
         self.object = self.get_object()
         context = self.get_context_data()
+        from api.models import Vote
         try:
-            rev = Review.objects.get(user=request.user,article=self.object)
-            context['upvoted'] = rev.rating == 1
-            context['downvoted'] = rev.rating == -1
-        except Review.DoesNotExist:
+            rev = Vote.objects.get(user=request.user, article=self.object)
+            context['upvoted'] = rev.vote_type == 'up'
+            context['downvoted'] = rev.vote_type == 'down'
+        except Vote.DoesNotExist:
             pass
         except TypeError:
             pass
@@ -391,21 +392,18 @@ def recomed(request):
 
 def update_review(request):
     if request.user.is_authenticated:
-        rating = request.POST['rating']
+        rating = int(request.POST['rating'])
         pk = request.POST['pk']
         article = Article.objects.get(pk=pk)
-        try:
-            review = Review.objects.get(article = article,user=request.user)
-            rate = review.rating
-            rate = int(rating)
-            review.rating = rate
-            review.save()
+        vote_type = 'up' if rating == 1 else 'down'
+        from api.models import Vote
+        vote, created = Vote.objects.get_or_create(article=article, user=request.user,
+                                                  defaults={'vote_type': vote_type})
+        if not created and vote.vote_type != vote_type:
+            vote.vote_type = vote_type
+            vote.save()
 
-        except ObjectDoesNotExist:
-            review = Review(article = article,user=request.user,rating=int(rating))
-            review.save()
-
-        return JsonResponse({"rate":article.get_total()})
+        return JsonResponse({"rate": article.upvotes - article.downvotes})
 
 def get_recommendation(request):
     if request.user.is_authenticated:
@@ -418,23 +416,23 @@ def get_recommendation(request):
 def get_article(request):
     # if request.user.is_authenticated:
     print(translate_url(url='/',lang_code=translation.get_language()))
-    article_list = Article.objects.all().order_by('-score')[:1000]
-    res = [{'title':i.title,'id':i.pk,'vote':i.get_total(),'rate':i.check_up_down(request.user)} for i in article_list]
+    article_list = Article.objects.all().order_by('-final_score')[:1000]
+    res = [{'title':i.title,'id':i.pk,'vote':i.upvotes - i.downvotes,'rate':i.check_up_down(request.user)} for i in article_list]
     return JsonResponse(res,safe=False)
 
 def get_article_top(request):
     # if request.user.is_authenticated:
     article_list = Article.objects.all().order_by('-comm_count')[:1000]
-    res = [{'title':i.title,'id':i.pk,'vote':i.get_total(),'rate':i.check_up_down(request.user)} for i in article_list]
+    res = [{'title':i.title,'id':i.pk,'vote':i.upvotes - i.downvotes,'rate':i.check_up_down(request.user)} for i in article_list]
     return JsonResponse(res,safe=False)
 
 def get_article_new(request):
     # if request.user.is_authenticated:
     article_list = Article.objects.all().order_by('-add_on')[:1000]
-    res = [{'title':i.title,'id':i.pk,'vote':i.get_total(),'rate':i.check_up_down(request.user)} for i in article_list]
+    res = [{'title':i.title,'id':i.pk,'vote':i.upvotes - i.downvotes,'rate':i.check_up_down(request.user)} for i in article_list]
     return JsonResponse(res,safe=False)
 
-def get_library_recommendation(request,pk):
+def get_library_reccomendation(request,pk):
     if request.user.is_authenticated:
         arts = []
         lib = Library.objects.get(pk=pk)
@@ -444,6 +442,26 @@ def get_library_recommendation(request,pk):
             arts.extend(arts_)
         arts = sorted(arts, key=lambda item: item['score'],reverse=True)
         return JsonResponse(arts,safe=False)
+
+
+def smart_recommendations(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'auth required'}, status=403)
+
+    from api.models import Vote
+    from deepseek_client import recommend_similar_papers
+
+    abstracts = []
+    for vote in Vote.objects.filter(user=request.user, vote_type='up'):
+        abstracts.append(vote.article.abstract)
+
+    keywords = request.user.keywords or []
+    tags = request.user.tags or []
+    prompt = ' '.join(keywords + tags + abstracts)
+    rec_ids = recommend_similar_papers(prompt)
+    articles = Article.objects.filter(pk__in=rec_ids)
+    data = [{'title': a.title, 'id': a.pk} for a in articles]
+    return JsonResponse({'recommendations': data})
 
 
 def change_lan(request,lan):
