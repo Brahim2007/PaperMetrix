@@ -342,9 +342,30 @@ class DetailArticle(DetailView):
             pass
 
         context['ids'] = []
-        for i in get_similar_items(f"{self.object.title} {self.object.abstract} {self.object.source} {self.object.type}",1,20):
-            art = Article.objects.get(pk=i)
-            context['ids'].append({'title':art.title,'id':art.pk})
+        # Prefer recommendations from the DeepSeek API when available. Failures
+        # result in falling back to the TF-IDF based approach.
+        rec_ids = []
+        try:
+            from api.deepseek_client import get_deepseek_recommendations
+
+            prompt = f"{self.object.title}\n{self.object.abstract}"
+            rec_ids = get_deepseek_recommendations(prompt)
+        except Exception:
+            rec_ids = []
+
+        if not rec_ids:
+            rec_ids = get_similar_items(
+                f"{self.object.title} {self.object.abstract} {self.object.source} {self.object.type}",
+                1,
+                20,
+            )
+
+        for _id in rec_ids:
+            try:
+                art = Article.objects.get(pk=_id)
+            except Article.DoesNotExist:
+                continue
+            context['ids'].append({'title': art.title, 'id': art.pk})
 
         if self.object.identifiers.get('doi'):
             re = requests.get(f'https://api.altmetric.com/v1/doi/{self.object.identifiers.get("doi")}')
