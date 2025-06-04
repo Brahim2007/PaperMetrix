@@ -481,19 +481,7 @@
           return dat;
       }
       $(function () {
-        $.ajax({type:'GET',url:"{% url 'get_tweets' object.pk %}",success:(res)=>{
-          // console.log($(this).find(".display"));
-          $('.tweet_pagination').pagination({
-            pageSize:5,
-            dataSource: res['tweets'],
-            showGoInput: true,
-            showGoButton: true,
-            callback: function(data, pagination) {
-                var html = template(data);
-                $('.tweets').html(html);
-            }
-        })
-      }})
+        // Twitter integration removed
       })
     </script>
 

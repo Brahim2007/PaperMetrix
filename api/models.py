@@ -5,8 +5,7 @@ from django.contrib.postgres import fields
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 import json
-from frontend import reccom
-from django.db.models.signals import post_save,pre_save
+from django.db.models.signals import post_save, post_delete, pre_save
 from django.utils import timezone
 import requests
 # Create your models here.
@@ -37,8 +36,11 @@ class Article(models.Model):
 
     count = models.IntegerField(default=0)
     comm_count = models.IntegerField(default=0)
-    score = models.IntegerField(blank=True,null=True)
-    twitter_data = models.JSONField(default=dict)
+    score = models.IntegerField(blank=True, null=True)
+    upvotes = models.IntegerField(default=0)
+    downvotes = models.IntegerField(default=0)
+    deepseek_score = models.FloatField(blank=True, null=True)
+    final_score = models.FloatField(blank=True, null=True)
     # reader_count_by_academic_status = models.TextField()
     # reader_count_by_subject_area = models.TextField()
     # reader_count_by_country = models.TextField()
@@ -96,19 +98,42 @@ class Article(models.Model):
         return len(self.comment_set.all())
 
     def list_(self):
-        return list(self.review_set.all().values_list('user__email',flat=True))
+        return list(self.vote_set.all().values_list('user__email', flat=True))
 
-    def check_up_down(self,user):
+    def check_up_down(self, user):
         if user.is_authenticated:
-            if user.email in self.list_():
-                re = Review.objects.get(article=self,user=user)
-                return re.rating
+            try:
+                vote = self.vote_set.get(user=user)
+                return 1 if vote.vote_type == 'up' else -1
+            except Vote.DoesNotExist:
+                pass
         return 0
+
+    def compute_final_score(self):
+        today = timezone.now().date()
+        age_factor = max(0, 1 - (today - self.add_on.date()).days / 365)
+        vote_score = self.upvotes - self.downvotes
+        ai_relevance = self.deepseek_score or 0.5
+        return round(vote_score * 0.4 + age_factor * 0.2 + ai_relevance * 0.4, 3)
 
 class Review(models.Model):
     rating = models.IntegerField(choices=((-1,-1),(1,1)))
     article = models.ForeignKey(to=Article,on_delete=models.CASCADE)
     user = models.ForeignKey(to=get_user_model(),on_delete=models.CASCADE)
+
+
+class Vote(models.Model):
+    VOTE_TYPES = (
+        ('up', 'Upvote'),
+        ('down', 'Downvote'),
+    )
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    vote_type = models.CharField(choices=VOTE_TYPES, max_length=4)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'article')
 
 class Tag(models.Model):
     tag = models.CharField(max_length=50)
@@ -154,3 +179,6 @@ def create_alt(sender,instance,**kwargs):
         instance.score = 0
 
 pre_save.connect(create_alt,sender=Article)
+
+# Import signals to register vote handlers
+from . import signals  # noqa
