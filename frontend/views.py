@@ -413,7 +413,7 @@ def get_article_new(request):
     res = [{'title':i.title,'id':i.pk,'vote':i.get_total(),'rate':i.check_up_down(request.user)} for i in article_list]
     return JsonResponse(res,safe=False)
 
-def get_library_reccomendation(request,pk):
+def get_library_recommendation(request,pk):
     if request.user.is_authenticated:
         arts = []
         lib = Library.objects.get(pk=pk)

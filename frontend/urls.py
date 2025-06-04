@@ -7,7 +7,7 @@ urlpatterns = [
     path('get_article_data/',views.get_article_data,name='get_article_data'),
     path('library/',views.LibaraySet.as_view(),name='library'),
     path('library/<pk>/',views.LibraryDetail.as_view(),name='library_detail'),
-    path('reccomendation/',views.recomed,name='reccomend'),
+    path('recommendation/',views.recomed,name='recommend'),
 
     path('topics/',views.topics,name='topics'),
     path('add_remove_topic/',views.add_remove_topic,name="add_remove_topic"),
@@ -29,7 +29,7 @@ urlpatterns = [
     path('get_article_new/',views.get_article_new,name='get_article_new'),
 
     path('get_articles/get_article_from_data/',get_articles.get_article_from_data,name='get_article_from_data'),
-    path('get_library_reccomendation/<pk>/',views.get_library_reccomendation,name='get_library_reccomendation'),
+    path('get_library_recommendation/<pk>/',views.get_library_recommendation,name='get_library_recommendation'),
 
     path('add_tag/<pk>/',get_articles.add_tag,name='add_tag'),
     path('remove_tag/<pk>/',get_articles.remove_tag,name='remove_tag'),
