@@ -3,6 +3,7 @@ celery
 redis
 django-celery-beat
 django-crispy-forms
+mysqlclient
 psycopg2
 scikit-learn
 pandas
