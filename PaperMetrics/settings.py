@@ -95,13 +95,13 @@ AUTH_USER_MODEL = 'authorization.User'
 # }
 
 DATABASES = {
-    'default':{
-        'ENGINE':'django.db.backends.postgresql_psycopg2',
-        'HOST':'',
-        'PORT':'',
-        'NAME':'paper',
-        'USER':'postgres',
-        'PASSWORD':'vihas007'
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('MYSQL_DATABASE', 'paper'),
+        'USER': os.getenv('MYSQL_USER', 'root'),
+        'PASSWORD': os.getenv('MYSQL_PASSWORD', ''),
+        'HOST': os.getenv('MYSQL_HOST', 'localhost'),
+        'PORT': os.getenv('MYSQL_PORT', '3306'),
     }
 }
 

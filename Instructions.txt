@@ -5,6 +5,10 @@ For Linux/Mac:
               install the requirements stated in req.txt:
                 pip3 install -r req.txt
 
+              install MySQL and create a database named `paper` (or adjust
+              environment variables `MYSQL_DATABASE`, `MYSQL_USER`,
+              `MYSQL_PASSWORD`, `MYSQL_HOST`, and `MYSQL_PORT` as needed).
+
               also install redis:
                 https://redis.io/download
               After downloading redis, add it to path variable.
