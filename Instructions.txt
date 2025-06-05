@@ -2,8 +2,8 @@ For Linux/Mac:
               Run following to execute the bash scripts:
                 chmod +x beat.sh && chmod +x worker.sh
 
-              install the requirements stated in req.txt:
-                pip3 install -r req.txt
+              install the requirements stated in requirements.txt:
+                pip3 install -r requirements.txt
 
               install MySQL and create a database named `paper` (or adjust
               environment variables `MYSQL_DATABASE`, `MYSQL_USER`,
@@ -27,8 +27,8 @@ For Linux/Mac:
               The redis works as background queue on which tasks are executed.
 
 For windows:
-              install the requirements stated in req.txt:
-                pip install -r req.txt
+              install the requirements stated in requirements.txt:
+                pip install -r requirements.txt
 
               install MySQL and create a database named `paper` or configure
               `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_HOST`,

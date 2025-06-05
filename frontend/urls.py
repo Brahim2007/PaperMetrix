@@ -35,7 +35,6 @@ urlpatterns = [
 
     path('add_tag/<pk>/',get_articles.add_tag,name='add_tag'),
     path('remove_tag/<pk>/',get_articles.remove_tag,name='remove_tag'),
-    path('get_tweets/<pk>/',get_articles.get_tweets,name='get_tweets'),
 
     path('lan/<str:lan>/',views.change_lan),
 

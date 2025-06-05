@@ -21,7 +21,8 @@ import json
 import collections
 from mendeley import Mendeley
 
-from .utils import get_article_from_authors,get_data,get_data_by_query
+from .utils import get_article_from_authors, get_data, get_data_by_query
+from api.deepseek_client import recommend_articles
 from .reccom import *
 import random
 import requests
@@ -342,24 +343,13 @@ class DetailArticle(DetailView):
         except TypeError:
             pass
 
-        context['ids'] = []
         # Prefer recommendations from the DeepSeek API when available. Failures
         # result in falling back to the TF-IDF based approach.
-        rec_ids = []
-        try:
-            from api.deepseek_client import get_deepseek_recommendations
-
-            prompt = f"{self.object.title}\n{self.object.abstract}"
-            rec_ids = get_deepseek_recommendations(prompt)
-        except Exception:
-            rec_ids = []
-
+        context['ids'] = []
+        prompt = f"{self.object.title} {self.object.abstract} {' '.join(self.object.keywords or [])}"
+        rec_ids = recommend_articles(prompt, limit=20)
         if not rec_ids:
-            rec_ids = get_similar_items(
-                f"{self.object.title} {self.object.abstract} {self.object.source} {self.object.type}",
-                1,
-                20,
-            )
+            rec_ids = get_similar_items(prompt, 1, 20)
 
         for _id in rec_ids:
             try:
@@ -454,7 +444,6 @@ def smart_recommendations(request):
         return JsonResponse({'error': 'auth required'}, status=403)
 
     from api.models import Vote
-    from deepseek_client import recommend_similar_papers
 
     abstracts = []
     for vote in Vote.objects.filter(user=request.user, vote_type='up'):
@@ -463,7 +452,7 @@ def smart_recommendations(request):
     keywords = request.user.keywords or []
     tags = request.user.tags or []
     prompt = ' '.join(keywords + tags + abstracts)
-    rec_ids = recommend_similar_papers(prompt)
+    rec_ids = recommend_articles(prompt)
     articles = Article.objects.filter(pk__in=rec_ids)
     data = [{'title': a.title, 'id': a.pk} for a in articles]
     return JsonResponse({'recommendations': data})

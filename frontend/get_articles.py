@@ -52,16 +52,3 @@ def remove_tag(request,pk):
     except Tag.DoesNotExist:
         pass
     return JsonResponse({"success":"Success"})
-
-def get_tweets(request, pk):
-    """Return tweets for a given article."""
-    try:
-        obj = Article.objects.get(pk=pk)
-        if obj.twitter_data.get("tweets") is None:
-            tweets = twitter_from_doi(obj.title, obj.identifiers.get("doi"))
-            obj.twitter_data = {"tweets": tweets}
-            obj.save()
-            return JsonResponse({"tweets": tweets})
-        return JsonResponse({"tweets": obj.twitter_data.get("tweets")})
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
