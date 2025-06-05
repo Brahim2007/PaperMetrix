@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin
-from django.contrib.postgres import fields
-from django.db.models.signals import post_save,post_delete
+from django.db.models.signals import post_save, post_delete
 
 from .managers import Manager
 from api import models as api
@@ -30,9 +29,9 @@ class User(AbstractBaseUser,PermissionsMixin):
     email = models.EmailField(unique=True)
     user_roles = models.CharField(choices=USER_ROLES,max_length=20,blank=True,null=True)
 
-    tags = fields.ArrayField(base_field=models.CharField(max_length=50),null=True,blank=True)
-    keywords = fields.ArrayField(base_field=models.CharField(max_length=50),null=True,blank=True)
-    authors = fields.ArrayField(base_field=models.CharField(max_length=50),null=True,blank=True)
+    tags = models.JSONField(default=list, null=True, blank=True)
+    keywords = models.JSONField(default=list, null=True, blank=True)
+    authors = models.JSONField(default=list, null=True, blank=True)
 
     objects = Manager()
     USERNAME_FIELD = 'email'
