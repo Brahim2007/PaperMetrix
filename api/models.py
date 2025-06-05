@@ -1,6 +1,5 @@
 from django.db import models
-from django.db.models import JSONField
-from django.contrib.postgres.fields import ArrayField
+
 from django.contrib.auth import get_user_model
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
@@ -21,9 +20,9 @@ class Article(models.Model):
     type = models.TextField()
 
     authors = models.ManyToManyField(Authors)
-    identifiers = JSONField()
+    identifiers = models.JSONField()
 
-    keywords = ArrayField(base_field=models.CharField(max_length=20),null=True,blank=True)
+    keywords = models.JSONField(default=list, null=True, blank=True)
 
     year = models.IntegerField()
     source = models.TextField()

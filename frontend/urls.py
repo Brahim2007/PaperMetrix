@@ -30,7 +30,8 @@ urlpatterns = [
     path('get_article_trending/',views.get_article_trending,name='get_article_trending'),
 
     path('get_articles/get_article_from_data/',get_articles.get_article_from_data,name='get_article_from_data'),
-    path('get_library_reccomendation/<pk>/',views.get_library_reccomendation,name='get_library_reccomendation'),
+    path('get_library_reccomendation/<pk>/', views.get_library_reccomendation, name='get_library_reccomendation'),
+    path('get_library_recommendation/<pk>/', views.get_library_reccomendation, name='get_library_recommendation'),
     path('smart_recommendations/', views.smart_recommendations, name='smart_recommendations'),
 
     path('add_tag/<pk>/',get_articles.add_tag,name='add_tag'),
