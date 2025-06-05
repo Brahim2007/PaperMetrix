@@ -20,7 +20,8 @@ USER_ROLES = (
     ('other','Other')
 )
 
-class User(AbstractBaseUser,PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin):
+    """Custom user model with email as username."""
     full_name = models.CharField(max_length=100,default="")
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -41,18 +42,3 @@ class User(AbstractBaseUser,PermissionsMixin):
         ordering = ['email']
 
 
-
-
-# def update_user_post_save(sender,instance,**kwargs):
-#     library = list(api.Library.objects.all().filter(user = instance))
-#     if len(library) == 0:
-#         library = api.Library(user = instance,articles=[])
-#         library.save()
-#
-# def update_user_post_delete(sender,instance,**kwargs):
-#     library = api.Library.objects.all().filter(user = instance)
-#     library.delete()
-#
-#
-# post_save.connect(update_user_post_save,sender=User)
-# post_delete.connect(update_user_post_delete,sender=User)
