@@ -330,7 +330,8 @@ class DetailArticle(DetailView):
     model = Article
     template_name = "frontend/detail.html"
     def get(self,request,pk):
-        super(DetailArticle,self).get(request,pk)
+        """Render detail view for an article with smart recommendations."""
+        super().get(request,pk)
         self.object = self.get_object()
         context = self.get_context_data()
         from api.models import Vote
@@ -343,8 +344,9 @@ class DetailArticle(DetailView):
         except TypeError:
             pass
 
-        # Prefer recommendations from the DeepSeek API when available. Failures
-        # result in falling back to the TF-IDF based approach.
+        # Prefer recommendations from the DeepSeek API when available. If the
+        # API returns nothing or fails we fall back to the TF‑IDF based
+        # keyword recommender.
         context['ids'] = []
         prompt = f"{self.object.title} {self.object.abstract} {' '.join(self.object.keywords or [])}"
         rec_ids = recommend_articles(prompt, limit=20)
