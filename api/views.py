@@ -31,12 +31,21 @@ def list_documents(request):
     if 'token' not in request.session:
         return redirect('/')
 
-    # print(dict(request.session))
-    # utils.get_data(request.session["token"]['access_token'])
-    #
-    headers = {"Authorization": "Bearer "+request.session["token"]['access_token']}
+    headers = {"Authorization": "Bearer " + request.session['token']['access_token']}
 
-    return render(request,'api/library.html', {"name":name, "docs":docs})
+    # Fetch the user profile to display the library owner's name.
+    profile_res = requests.get("https://api.mendeley.com/profiles/me", headers=headers)
+    if profile_res.ok:
+        profile = profile_res.json()
+        name = profile.get("display_name") or f"{profile.get('first_name', '')} {profile.get('last_name', '')}".strip()
+    else:
+        name = ""
+
+    # Retrieve the list of documents in the user's library.
+    docs_res = requests.get("https://api.mendeley.com/documents", headers=headers)
+    docs = docs_res.json() if docs_res.ok else []
+
+    return render(request, 'api/library.html', {"name": name, "docs": docs})
 
 
 def get_document(request):
