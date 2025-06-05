@@ -9,6 +9,7 @@ from django.conf import settings
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+from django.db import connection
 from api.models import Article
 
 
@@ -72,5 +73,12 @@ def get_similar_items(query: str, start: int = 0, end: int = 50, get_scores: boo
     return [ARTICLE_IDS[i] for i in similar_indices]
 
 
-# Load the matrix when the module is imported so recommendations are fast.
+
+# Load the matrix when the Article table is available.  This avoids errors
+# during migrations or initial setup when the table might not exist.
+try:
+    if Article._meta.db_table in connection.introspection.table_names():
+        load_tfidf_matrix()
+except Exception:
+    pass
 

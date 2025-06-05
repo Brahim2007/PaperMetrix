@@ -23,6 +23,11 @@ from mendeley import Mendeley
 from .utils import get_article_from_authors, get_data, get_data_by_query
 from api.deepseek_client import recommend_articles
 from .reccom import *
+from .services.recommendation_service import (
+    summarize_reader_data,
+    library_recommendations,
+    recommend_with_fallback,
+)
 import random
 import requests
 import re
@@ -154,97 +159,8 @@ def get_article_data(request):
 def get_readers(request,id):
     if request.method == "GET":
         article = Article.objects.get(pk=id)
-        readers_ = article.get_json()["reader_count_by_academic_status"]
-        subject_ = article.get_json()['reader_count_by_subject_area']
-        readers = {}
-        for i,j in readers_.items():
-            if i in ["Proffesor","Researcher","Librarian"]:
-                if "Proffesor/ Researcher/ Librarian" in readers:
-                    readers["Proffesor/ Researcher/ Librarian"] += j
-                else:
-                    readers["Proffesor/ Researcher/ Librarian"] = j
-
-            elif i in ["Lecturer","Lecturer > Senior Lecturer","Student  > Doctoral Student",]:
-                if "Senior Lecturer/ Lecturer/ Doctorate" in readers:
-                    readers["Senior Lecturer/ Lecturer/ Doctorate"] += j
-                else:
-                    readers["Senior Lecturer/ Lecturer/ Doctorate"] = j
-            elif i in ["Student  > Master","Student  > Bachelor","Student  > Postgraduate","Student  > Ph. D. Student"]:
-                if "Postgrads/ Masters/ Bachelors " in readers:
-                    readers["Postgrads/ Masters/ Bachelors"] += j
-                else:
-                    readers["Postgrads/ Masters/ Bachelors"] = j
-            else:
-                if "Others" in readers:
-                    readers["Others"] += j
-                else:
-                    readers["Others"] = j
-
-        subject = {}
-        for i,j in subject_.items():
-            if i in ["Design","Philosophy","Linguistics","Arts and Humanities"]:
-                if "Arts and Humanities/ Design/ Philosophy" in subject:
-                    subject["Arts and Humanities/ Design/ Philosophy"] += j
-                else:
-                    subject["Arts and Humanities/ Design/ Philosophy"] = j
-
-            elif i in ["Engineering","Chemical Engineering"]:
-                if "Engineering" in subject:
-                    subject["Engineering"] += j
-                else:
-                    subject["Engineering"] = j
-
-            elif i in ["Environmental Science","Energy","Earth and Planetary Sciences","Materials Science"]:
-                if "Environmental Science/ Planetary Sciences/ Energy" in subject:
-                    subject["Environment/ Planetary Sciences/ Energy"] += j
-                else:
-                    subject["Environment/ Planetary Sciences/ Energy"] = j
-
-            elif i in ["Psychology","Neuroscience"]:
-                if "Psychology/ Neuroscience" in subject:
-                    subject["Psychology/ Neuroscience"] += j
-                else:
-                    subject["Psychology/ Neuroscience"] = j
-
-            elif i in ["Social Sciences"]:
-                if "Social Sciences" in subject:
-                    subject["Social Sciences"] += j
-                else:
-                    subject["Social Sciences"] = j
-
-            elif i in ["Mathematics","Physics and Astronomy","Chemistry","Computer Science"]:
-                if "Mathematics/ Physics/ Chemistry/ Computers" in subject:
-                    subject["Mathematics/ Physics/ Chemistry/ Computers"] += j
-                else:
-                    subject["Mathematics/ Physics/ Chemistry/ Computers"] = j
-
-            elif i in ["Medicine and Dentistry","Immunology and Microbiology","Agricultural and Biological Sciences"]:
-                if "Medicine/ Biology/ Agricultural Sciences" in subject:
-                    subject["Medicine/ Biology/ Agricultural Sciences"] += j
-                else:
-                    subject["Medicine/ Biology/ Agricultural Sciences"] = j
-
-            elif i in ["Nursing and Health Proffesions","Pharmacology, Toxicology and Pharmaceutical Science","Veterinary Science and Veterinary Medicine"]:
-                if "Nursing/ Pharmacology/ Toxicology/ Veterinary" in subject:
-                    subject["Nursing/ Pharmacology/ Toxicology/ Veterinary"] += j
-                else:
-                    subject["Nursing/ Pharmacology/ Toxicology/ Veterinary"] = j
-
-            elif i in ["Economics, Econometrics and Finance","Business, Management and Accounting"]:
-                if "Business/ Management/ Accounting/ Economics" in subject:
-                    subject["Business/ Management/ Accounting/ Economics"] += j
-                else:
-                    subject["Business/ Management/ Accounting/ Economics"] = j
-
-            elif i in ["Sports and Recreations"]:
-                if "Sports and Recreation" in subject:
-                    subject["Sports and Recreation"] += j
-                else:
-                    subject["Sports and Recreation"] = j
-
-        subject = collections.OrderedDict(sorted(subject.items(),key=lambda x:x[1],reverse=True)[:4])
-
-        return JsonResponse({"readers":readers,"readers_by_sub":subject})
+        data = summarize_reader_data(article)
+        return JsonResponse(data)
 
 
 def topics(request):
@@ -345,9 +261,7 @@ class DetailArticle(DetailView):
         # keyword recommender.
         context['ids'] = []
         prompt = f"{self.object.title} {self.object.abstract} {' '.join(self.object.keywords or [])}"
-        rec_ids = recommend_articles(prompt, limit=20)
-        if not rec_ids:
-            rec_ids = get_similar_items(prompt, 1, 20)
+        rec_ids = recommend_with_fallback(prompt, limit=20)
 
         for _id in rec_ids:
             try:
@@ -427,14 +341,9 @@ def get_article_trending(request):
 
 def get_library_reccomendation(request,pk):
     if request.user.is_authenticated:
-        arts = []
         lib = Library.objects.get(pk=pk)
-        for i in lib.articles.all():
-            reccom = get_similar_items(f"{i.title} {i.abstract} {i.source} {i.type}",get_scores=True)
-            arts_ = [{'title':i.title,'id':i.pk,'score':reccom[:,1][j]} for j,i in enumerate(Article.objects.filter(pk__in = reccom[:,0]))]
-            arts.extend(arts_)
-        arts = sorted(arts, key=lambda item: item['score'],reverse=True)
-        return JsonResponse(arts,safe=False)
+        arts = library_recommendations(lib)
+        return JsonResponse(arts, safe=False)
 
 
 def smart_recommendations(request):

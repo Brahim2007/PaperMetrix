@@ -1,3 +1,4 @@
+import logging
 from celery import shared_task
 from django.core.mail import send_mail
 from django.conf import settings
@@ -5,6 +6,9 @@ from authorization.models import User
 from api.models import Article
 from frontend.reccom import get_similar_items
 from django.template.loader import render_to_string
+from django.db import transaction
+
+logger = logging.getLogger(__name__)
 
 @shared_task
 def add():
@@ -34,9 +38,16 @@ def add():
 
 @shared_task
 def update_scores():
-    for article in Article.objects.all():
-        article.final_score = article.compute_final_score()
-        article.save()
+    """Recompute final scores for all articles if necessary."""
+    updated = 0
+    with transaction.atomic():
+        for article in Article.objects.all():
+            new_score = article.compute_final_score()
+            if article.final_score != new_score:
+                article.final_score = new_score
+                article.save()
+                updated += 1
+    logger.info("Recomputed scores for %s articles", updated)
     return 'updated'
 
 
@@ -45,4 +56,5 @@ def refresh_tfidf_matrix():
     """Rebuild the cached TF‑IDF matrix used for recommendations."""
     from frontend import reccom
     reccom.rebuild_tfidf_matrix()
+    logger.info("TF-IDF matrix rebuilt")
     return 'refreshed'
