@@ -38,3 +38,11 @@ def update_scores():
         article.final_score = article.compute_final_score()
         article.save()
     return 'updated'
+
+
+@shared_task
+def refresh_tfidf_matrix():
+    """Rebuild the cached TF‑IDF matrix used for recommendations."""
+    from frontend import reccom
+    reccom.rebuild_tfidf_matrix()
+    return 'refreshed'

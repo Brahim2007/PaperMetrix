@@ -3,7 +3,6 @@ from django.shortcuts import render
 from django.http import JsonResponse,HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.cache import cache
@@ -116,7 +115,6 @@ def search(request):
         return render(request,'frontend/search.html',{'article_list':article_list})
     return redirect(reverse('home'))
 
-@csrf_exempt
 def add_to_library(request):
     if request.user.is_authenticated:
         if request.method == "POST":
@@ -143,7 +141,6 @@ def load_articles_author(request):
             return JsonResponse({'id':list(articles.values_list("pk",flat=True)),'title':list(articles.values_list("title",flat=True))})
 
 
-@csrf_exempt
 def get_article_data(request):
     if request.method == "POST":
         article_list = Article.objects.all().order_by('-count')
@@ -154,7 +151,6 @@ def get_article_data(request):
         return JsonResponse({"id":list(page_obj.object_list.values_list("id",flat=True)),"has_previous":page_obj.has_previous(),"has_next":page_obj.has_next(),"total":paginator.num_pages})
 
 
-@csrf_exempt
 def get_readers(request,id):
     if request.method == "GET":
         article = Article.objects.get(pk=id)

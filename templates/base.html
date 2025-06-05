@@ -25,4 +25,33 @@
   {% block content %}{% endblock %}
   <button class="btn btn-secondary position-fixed bottom-0 end-0 m-3" onclick="toggleDark()">Dark</button>
 
+  <script>
+    const csrfToken = '{{ csrf_token }}';
+    if (window.jQuery) {
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          if (!this.crossDomain && !/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type)) {
+            xhr.setRequestHeader('X-CSRFToken', csrfToken);
+          }
+        }
+      });
+    }
+    if (window.fetch) {
+      const _fetch = window.fetch;
+      window.fetch = function(resource, init) {
+        init = init || {};
+        init.headers = init.headers || {};
+        const method = (init.method || 'GET').toUpperCase();
+        if (!/^https?:/i.test(resource) && method !== 'GET') {
+          if (init.headers instanceof Headers) {
+            init.headers.append('X-CSRFToken', csrfToken);
+          } else {
+            init.headers['X-CSRFToken'] = csrfToken;
+          }
+        }
+        return _fetch(resource, init);
+      };
+    }
+  </script>
+
 </html>
