@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from unittest.mock import patch
 from api.models import Article, Authors, Tag, Library
+from frontend.services import recommendation_service
 import numpy as np
 
 class TagViewTests(TestCase):
@@ -99,4 +100,28 @@ class ReccomTests(TestCase):
         reccom.rebuild_tfidf_matrix()
         sims = reccom.get_similar_items('cats', 0, 1)
         self.assertEqual(sims[0], 'c1')
+
+
+class RecommendWithFallbackTests(TestCase):
+    """Tests for the recommend_with_fallback helper."""
+
+    def test_returns_deepseek_results_when_available(self):
+        ids = ['x1', 'x2']
+        with patch('api.deepseek_client.recommend_articles', return_value=ids) as deep_mock, \
+             patch('frontend.services.recommendation_service.deepseek', new=deep_mock), \
+             patch('frontend.services.recommendation_service.get_similar_items') as sim_mock:
+            result = recommendation_service.recommend_with_fallback('prompt', limit=2)
+        self.assertEqual(result, ids)
+        deep_mock.assert_called_once_with('prompt', limit=2)
+        sim_mock.assert_not_called()
+
+    def test_falls_back_when_deepseek_empty(self):
+        fallback = ['f1', 'f2']
+        with patch('api.deepseek_client.recommend_articles', return_value=[]) as deep_mock, \
+             patch('frontend.services.recommendation_service.deepseek', new=deep_mock), \
+             patch('frontend.services.recommendation_service.get_similar_items', return_value=fallback) as sim_mock:
+            result = recommendation_service.recommend_with_fallback('prompt', limit=2)
+        self.assertEqual(result, fallback)
+        deep_mock.assert_called_once_with('prompt', limit=2)
+        sim_mock.assert_called_once_with('prompt', 1, 2)
 
