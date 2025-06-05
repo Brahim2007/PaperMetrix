@@ -9,3 +9,4 @@ pandas
 requests>=2.32.0
 mendeley
 python-dotenv
+psycopg2-binary
