@@ -53,3 +53,50 @@ class TagViewTests(TestCase):
         res = self.client.get(reverse('get_library_recommendation', args=[library.pk]))
         self.assertEqual(res.status_code, 200)
 
+
+class ReccomTests(TestCase):
+    def setUp(self):
+        self.author = Authors.objects.create(name='Auth', done=True)
+        with patch('api.models.requests.get') as mock_get:
+            mock_get.return_value.ok = False
+            self.art1 = Article.objects.create(
+                title='Dogs rule',
+                type='journal',
+                year=2020,
+                source='src',
+                publisher='pub',
+                id='d1',
+                link='http://example.com',
+                abstract='All about dogs',
+                identifiers={'doi': '10.1/d1'},
+            )
+        self.art1.authors.add(self.author)
+        with patch('api.models.requests.get') as mock_get:
+            mock_get.return_value.ok = False
+            self.art2 = Article.objects.create(
+                title='Cats world',
+                type='journal',
+                year=2020,
+                source='src',
+                publisher='pub',
+                id='c1',
+                link='http://example.com',
+                abstract='Cats are great',
+                identifiers={'doi': '10.1/c1'},
+            )
+        self.art2.authors.add(self.author)
+
+    def tearDown(self):
+        import os
+        from django.conf import settings
+        for f in ['tfidf.pickle', 'tfidf_fit.pickle']:
+            path = os.path.join(settings.BASE_DIR, f)
+            if os.path.exists(path):
+                os.remove(path)
+
+    def test_similar_items(self):
+        from frontend import reccom
+        reccom.rebuild_tfidf_matrix()
+        sims = reccom.get_similar_items('cats', 0, 1)
+        self.assertEqual(sims[0], 'c1')
+

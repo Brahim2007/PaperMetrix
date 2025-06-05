@@ -30,7 +30,7 @@ def rebuild_tfidf_matrix() -> None:
         ARTICLE_IDS.append(art.pk)
         joined.append(f"{art.title} {art.abstract} {art.source} {art.type}")
 
-    tf = TfidfVectorizer(analyzer="word", ngram_range=(1, 3), min_df=0, stop_words="english")
+    tf = TfidfVectorizer(analyzer="word", ngram_range=(1, 3), min_df=1, stop_words="english")
     TFIDF_FIT = tf.fit(joined)
     TFIDF_MATRIX = TFIDF_FIT.transform(joined)
 
