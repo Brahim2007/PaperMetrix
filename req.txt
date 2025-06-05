@@ -3,7 +3,7 @@ celery
 redis
 django-celery-beat==2.2.1
 django-crispy-forms
-psycopg2
+mysqlclient
 scikit-learn
 pandas
 requests>=2.32.0
