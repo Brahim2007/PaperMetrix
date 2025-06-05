@@ -1,2 +1,0 @@
-class MendeleySession:
-    pass
