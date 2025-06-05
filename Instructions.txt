@@ -5,9 +5,9 @@ For Linux/Mac:
               install the requirements stated in req.txt:
                 pip3 install -r req.txt
 
-              install MySQL and create a database named "paper":
-                https://dev.mysql.com/doc/
-              update database credentials in PaperMetrics/settings.py if needed
+              install MySQL and create a database named `paper` (or adjust
+              environment variables `MYSQL_DATABASE`, `MYSQL_USER`,
+              `MYSQL_PASSWORD`, `MYSQL_HOST`, and `MYSQL_PORT` as needed).
 
               also install redis:
                 https://redis.io/download
@@ -30,7 +30,9 @@ For windows:
               install the requirements stated in req.txt:
                 pip install -r req.txt
 
-              install MySQL and create a database named "paper" as described in MySQL docs.
+              install MySQL and create a database named `paper` or configure
+              `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_HOST`,
+              and `MYSQL_PORT` environment variables as needed.
               
               also install redis:
                 https://github.com/microsoftarchive/redis/releases/tag/win-3.0.504

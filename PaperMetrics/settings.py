@@ -97,11 +97,11 @@ AUTH_USER_MODEL = 'authorization.User'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'NAME': 'paper',
-        'USER': 'root',
-        'PASSWORD': ''
+        'NAME': os.getenv('MYSQL_DATABASE', 'paper'),
+        'USER': os.getenv('MYSQL_USER', 'root'),
+        'PASSWORD': os.getenv('MYSQL_PASSWORD', ''),
+        'HOST': os.getenv('MYSQL_HOST', 'localhost'),
+        'PORT': os.getenv('MYSQL_PORT', '3306'),
     }
 }
 
