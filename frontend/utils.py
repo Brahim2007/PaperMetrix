@@ -100,16 +100,13 @@ def get_data(token):
         for sub in val:
             limit = 100
             query = sub.replace(" ","+").lower()
-            print(query)
             try:
                 response = requests.get(f'https://api.mendeley.com/search/catalog?query={query}&view=all&open_access=True&limit={limit}',headers=headers).json()
             except requests.exceptions.ConnectionError:
-                print("okay_bitxh")
                 time.sleep(5)
                 response = requests.get(f'https://api.mendeley.com/search/catalog?query={query}&view=all&open_access=True&limit={limit}',headers=headers).json()
 
             for i,res in enumerate(response):
-                print(i)
 
                 if 'identifiers' not in res:
                     continue
@@ -184,12 +181,10 @@ def get_article_from_authors(author_name,token):
         response = requests.get(f'https://api.mendeley.com/search/catalog?author={author_name}&view=all&open_access=True&limit=100',headers=headers).json()
 
     except requests.exceptions.ConnectionError:
-        print("okay_bitxh")
         time.sleep(5)
         response = requests.get(f'https://api.mendeley.com/search/catalog?author={author_name}&view=all&open_access=True&limit=100',headers=headers).json()
 
-    for i,res in enumerate(response):
-        print(i)
+    for i, res in enumerate(response):
         if 'identifiers' not in res:
             continue
 

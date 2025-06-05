@@ -18,6 +18,19 @@ PaperMetrix is a Django based platform for managing and recommending academic ar
    ```bash
    python manage.py runserver
    ```
+6. To install dependencies in a virtual environment run:
+   ```bash
+   ./scripts/setup.sh
+   ```
+
+## Recommendation Tasks
+
+Run Celery workers to process background jobs:
+```bash
+redis-server
+./worker.sh
+./beat.sh
+```
 
 ## Environment Variables
 

@@ -11,10 +11,12 @@ import requests
 
 
 class Authors(models.Model):
-    name = models.TextField(unique = True)
+    """Author entity used for article relations."""
+    name = models.TextField(unique=True)
     done = models.BooleanField()
 
 class Article(models.Model):
+    """Representation of an academic article."""
     add_on = models.DateTimeField(auto_now_add=True)
     title = models.TextField()
     type = models.TextField()
@@ -116,12 +118,14 @@ class Article(models.Model):
         return round(vote_score * 0.4 + age_factor * 0.2 + ai_relevance * 0.4, 3)
 
 class Review(models.Model):
+    """User rating for an article."""
     rating = models.IntegerField(choices=((-1,-1),(1,1)))
     article = models.ForeignKey(to=Article,on_delete=models.CASCADE)
     user = models.ForeignKey(to=get_user_model(),on_delete=models.CASCADE)
 
 
 class Vote(models.Model):
+    """Upvote or downvote for an article."""
     VOTE_TYPES = (
         ('up', 'Upvote'),
         ('down', 'Downvote'),
@@ -148,6 +152,7 @@ def set_total(sender,instance,created,**kwargs):
 post_save.connect(set_total,sender=Review)
 
 class Library(models.Model):
+    """Collection of articles belonging to a user."""
     name = models.CharField(max_length=20)
     user = models.ForeignKey(get_user_model(),on_delete=models.CASCADE)
     articles = models.ManyToManyField(Article)
@@ -155,6 +160,7 @@ class Library(models.Model):
 
 
 class Comment(models.Model):
+    """User comment on an article."""
     body = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
     article = models.ForeignKey(Article, models.DO_NOTHING)

@@ -48,9 +48,6 @@ class GetAuthor(DetailView):
         paginator = Paginator(context['object'].article_set.all().order_by('-count'), 25)
         page_number = request.GET.get('page',1)
         page_obj = paginator.get_page(page_number)
-        print(page_obj)
-        for i in page_obj:
-            print(i)
 
         context['page_obj'] = page_obj
 
@@ -94,13 +91,11 @@ def delete_library(request):
         return HttpResponseRedirect(reverse('login'))
 
     if request.method == 'POST':
-        print(request.POST)
         Library.objects.get(pk=request.POST['id']).delete()
     return HttpResponseRedirect(reverse('library'))
 
 def search(request):
     if 'search' in request.GET:
-        print(cache)
         try:
             if request.GET['search'] in cache:
                 article_list = Article.objects.all().filter(id__in=cache.get(request.GET['search']))
@@ -123,7 +118,6 @@ def search(request):
 def add_to_library(request):
     if request.user.is_authenticated:
         if request.method == "POST":
-            print(request.POST)
             id,lib_id = request.POST['id'],int(request.POST['lib_id'])
             library = request.user.library_set.get(pk=lib_id)
             art = Article.objects.get(pk=id)
@@ -173,10 +167,9 @@ def topics(request):
 def add_remove_topic(request):
     if request.method == "POST":
         tag = request.POST["tag"]
-        print(request.POST["add"])
+        
         if request.POST["add"]=='1':
             tags = [] if request.user.tags is None else list(request.user.tags)
-            print(tag,tags)
             if tag not in tags:
                 tags.append(tag)
                 request.user.tags = tags
@@ -317,7 +310,6 @@ def get_recommendation(request):
 
 def get_article(request):
     # if request.user.is_authenticated:
-    print(translate_url(url='/',lang_code=translation.get_language()))
     article_list = Article.objects.all().order_by('-final_score')[:1000]
     res = [{'title':i.title,'id':i.pk,'vote':i.upvotes - i.downvotes,'rate':i.check_up_down(request.user)} for i in article_list]
     return JsonResponse(res,safe=False)

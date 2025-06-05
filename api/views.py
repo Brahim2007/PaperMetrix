@@ -21,7 +21,6 @@ def index(request):
 def auth_return(request):
     auth = mendeley.start_authorization_code_flow(state=request.GET['state'])
     current_url = request.build_absolute_uri()
-    print(current_url)
     mendeley_session = auth.authenticate(current_url)
 
     request.session['token'] = mendeley_session.token
@@ -36,7 +35,6 @@ def list_documents(request):
     # utils.get_data(request.session["token"]['access_token'])
     #
     headers = {"Authorization": "Bearer "+request.session["token"]['access_token']}
-    print(requests.get('https://api.mendeley.com/search/catalog?query=aerobiology&limit=25&view=all&open_access=True', headers=headers).json()[-1])
 
     return render(request,'api/library.html', {"name":name, "docs":docs})
 

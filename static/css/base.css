@@ -1,0 +1,9 @@
+body.dark-mode {
+  background-color: #121212;
+  color: #fff;
+}
+
+.glass {
+  backdrop-filter: blur(10px) saturate(150%);
+  background: rgba(255, 255, 255, 0.1);
+}

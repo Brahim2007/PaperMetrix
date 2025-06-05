@@ -12,7 +12,6 @@ def sign_up(request):
     if request.method == "POST":
         form = forms.Signup(request.POST)
         if form.is_valid():
-            print(dict(form.cleaned_data))
             form.save()
 
 
