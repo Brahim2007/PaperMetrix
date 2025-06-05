@@ -6,6 +6,7 @@ from .models import Article, Authors
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ("title", "publisher", "year", "score", "upvotes", "downvotes", "final_score")
     search_fields = ("title", "publisher")
+    list_filter = ("publisher", "year")
 
 
 admin.site.register(Authors)
